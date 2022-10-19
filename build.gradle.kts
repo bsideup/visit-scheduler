@@ -52,3 +52,7 @@ tasks {
     }
   }
 }
+
+tasks.withType<Test> {
+    maxParallelForks = 1
+}
