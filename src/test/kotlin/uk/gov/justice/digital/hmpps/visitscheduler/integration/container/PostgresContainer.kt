@@ -16,7 +16,6 @@ object PostgresContainer {
       withPassword("visit_scheduler")
       withReuse(true)
       withLogConsumer(logConsumer)
-      start()
     }
   }
 }

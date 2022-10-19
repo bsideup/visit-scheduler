@@ -18,7 +18,6 @@ object LocalStackContainer {
       withServices(LocalStackContainer.Service.SNS, LocalStackContainer.Service.SQS)
       withEnv("DEFAULT_REGION", "eu-west-2")
       withLogConsumer(logConsumer)
-      start()
     }
   }
 }

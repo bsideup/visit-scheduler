@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.visitscheduler.integration
 
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -11,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.testcontainers.lifecycle.Startables
 import uk.gov.justice.digital.hmpps.visitscheduler.helper.JwtAuthHelper
 import uk.gov.justice.digital.hmpps.visitscheduler.helper.SessionTemplateEntityHelper
 import uk.gov.justice.digital.hmpps.visitscheduler.helper.VisitEntityHelper
@@ -54,24 +53,14 @@ abstract class IntegrationTestBase {
   companion object {
     internal val prisonApiMockServer = PrisonApiMockServer()
 
-    @BeforeAll
-    @JvmStatic
-    fun startMocks() {
-      prisonApiMockServer.start()
-    }
-
-    @AfterAll
-    @JvmStatic
-    fun stopMocks() {
-      prisonApiMockServer.stop()
-    }
-
     private val pgContainer = PostgresContainer.instance
     private val lsContainer = LocalStackContainer.instance
 
     @JvmStatic
     @DynamicPropertySource
     fun properties(registry: DynamicPropertyRegistry) {
+      prisonApiMockServer.start()
+      Startables.deepStart(pgContainer, lsContainer).join()
       pgContainer?.run {
         registry.add("spring.datasource.url", pgContainer::getJdbcUrl)
         registry.add("spring.datasource.username", pgContainer::getUsername)
